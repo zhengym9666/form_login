@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+
+
+</head>
+<body>
+
+这是index首页
+
+<input type="button" id="logout-btn" value="注销">
+
+</div>
+
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+<script>
+
+    $(function() {
+        $("#logout-btn").click(function() {
+            $.ajax({
+                url:'/logout',
+                type:'post',
+                data:{},
+                success:function(data) {
+                    console.log(data);
+                    if (data.logoutRes) {
+                        alert(data.msg);
+                        window.location.href="login6.html";
+                    }
+                }
+            });
+        });
+    })
+
+</script>
+
+</body>
+</html>
