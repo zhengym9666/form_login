@@ -249,8 +249,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                  //登录页面允许所有用户访问
                 .permitAll()
                 //参数是一个 AuthenticationSuccessHandler 对象，这个对象中我们要实现的方法是 onAuthenticationSuccess。
-                //参数一：HttpServletRequest，可以做服务端跳转，请求转发和请求重定向
-                //参数二：HttpServletResponse，可以做客户端跳转，只返回json数据。
+                //参数一：HttpServletRequest，可以做服务端跳转，请求转发
+                //参数二：HttpServletResponse，可以做服务端跳转，请求重定向；可以做客户端跳转，只返回json数据。
                 //参数三：Authentication，保存了刚刚登陆成功的用户信息
                 .successHandler(((request, response, authentication) -> {
                     Object principle = authentication.getPrincipal();
@@ -266,7 +266,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable();*/
 
 
-        //前后端分离，服务端可做跳转，可返回json，由前端跳转，但一般是服务端返回json，由前端跳转
         //failureHandler: 登陆失败，囊括了failureForwardUrl和failureUrl的功能
         /*http.authorizeRequests()
                 //任何请求都需要验证
