@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
  **/
 /**
  * @ClassName MyAuthenticationProvider
- * @Description TODO    在不影响原验证逻辑的情况下，嵌入验证码验证逻辑
+ * @Description TODO    定制登录认证流程，在不影响原验证逻辑的情况下，嵌入验证码验证逻辑
  * @Author zhengym
  * @Date 2020/5/8 12:20
  * @Version 1.0

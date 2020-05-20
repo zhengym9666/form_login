@@ -362,8 +362,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //登录成功页面允许所有用户访问
                 .permitAll()
                 //参数是一个AuthenticationFailureHandler对象，这个对象中我们要实现的方法是onAuthenticationFailure。
-                //参数一：HttpServletRequest，可以做服务端跳转，请求转发和请求重定向
-                //参数二：HttpServletResponse，可以做客户端跳转，只返回json数据。
+                //参数一：HttpServletRequest，可以做服务端跳转，请求转发，一般不由服务器跳转
+                //参数二：HttpServletResponse，可以做服务端跳转，请求重定向；可以做客户端跳转，只返回json数据。
                 //参数三：AuthenticationException，保存了登陆失败的原因
                 .failureHandler(((request, response, exception) -> {
                     response.setContentType("application/json;charset=utf-8");
@@ -391,6 +391,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf().disable()
                 .exceptionHandling()
+                //参数是一个AuthenticationEntryPoint对象，在这个对象中我们要实现的方法是commence
+                //参数一：HttpServletRequest，可以做服务端跳转，请求转发，一般不由服务器跳转
+                //参数二：HttpServletResponse，可以做服务端跳转，请求重定向；可以做客户端跳转，只返回json数据。
+                //参数三：authException，保存了未认证的异常信息
                 //自定义authenticationEntryPoint方法，该方法返回json对象即可，这样如果用户访问一个需要认证才能访问的请求，就不会发生重定向操作
                 //服务端会直接给浏览器一个json提示，浏览器接收到json后，该干嘛干嘛。
                 .authenticationEntryPoint(((request, response, authException) -> {
@@ -405,9 +409,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 }));*/
 
 
-        //前后端分离，注销登录处理方案
+        //前后端分离，注销登录处理方案：logoutSuccessHandler
         //spring security注销成功服务端默认是直接跳转到登录页面，在前后端分离的场景下，注销后，服务端只返回json数据，页面的跳转由客户端控制
-      /*  http.authorizeRequests()
+        /*http.authorizeRequests()
                 //任何请求都需要验证
                 .anyRequest().authenticated()
                 .and()
@@ -466,6 +470,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 }))
                 .permitAll()
                 .and()
+                //参数是一个LogoutSuccessHandler对象，在这个对象中我们要实现的方法是onLogoutSuccess
+                //参数一：HttpServletRequest，可以做服务端跳转，请求转发，一般不由服务器跳转
+                //参数二：HttpServletResponse，可以做服务端跳转，请求重定向；可以做客户端跳转，只返回json数据。
+                //参数三：authentication，保存了登录信息
                 //logoutSuccessHandler: 自定义注销成功后返回json，服务端不进行默认的跳转到登录页面，页面跳转由前端控制。
                 //前后端分离下，服务端只负责返回数据。
                 .logout().logoutUrl("/logout")
