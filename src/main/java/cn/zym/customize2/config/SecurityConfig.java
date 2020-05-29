@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
@@ -42,12 +43,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return userDetailsManager;
     }
 
+    /*@Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
+    }*/
+
     //生成自定义provider的bean
     @Bean
     MyAuthenticationProvider myAuthenticationProvider() {
         MyAuthenticationProvider provider = new MyAuthenticationProvider();
         provider.setPasswordEncoder(passwordEncoder());
-        provider.setUserDetailsService(userDetailsService());
+        provider.setUserDetailsService(userDetailsService());//将内存用户注入到provider
         return provider;
     }
 
@@ -58,6 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return manager;
     }
 
+    //注入自定义detail
     @Autowired
     MyAuthenticationDetailsSource myAuthenticationDetailsSource;
 
