@@ -39,6 +39,7 @@ import java.util.Map;
  * @Date 2020/4/23 16:48
  * @Version 1.0
  */
+@Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /*PasswordEncoder:对明文密码加密，使用MD5散列函数加密，然后进行加盐（相同的明文密码生成的密文不同）
