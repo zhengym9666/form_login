@@ -1,0 +1,34 @@
+HttpSession:
+HttpSession是一个服务端的概念，服务端生成的HttpSession会有一个对应的sessionid,这个sessionid会通过cookie传给前端，前端在以后的请求中，会带上
+sessionid这个参数，服务端拿到这个sessionid会把前端请求和服务端的某个HttpSession对应起来，形成“会话”的感觉。
+
+浏览器的关闭不会导致服务端的HttpSession失效，要使服务端的HttSession失效，要么手动调用HttpSession#invalidate方法，要么等session自动过期，
+要么服务器重启。
+
+为什么有人会感觉浏览器关闭后session就失效了？
+浏览器关闭后，默认情况下，浏览器不会保存sessionid的，那么sessionid就清除了，所以当浏览器再次访问服务器的时候，服务器会重新再分配一个sessionid,
+这个sessionid与之前的HttpSession对应不上，所以感觉session失效。
+
+会话固定攻击：
+浏览器没有关闭，服务器的HttpSession也没有过期的情况下，维系浏览器和服务器之间的sessionid就不会发生变化，利用这个特点，非法分子可以伪造sessionid
+给受害人进行授权和认证后，然后用这个sessionid冒充受害人盗取受害人的网站信息。
+若网站还支持URL重写（即若浏览器禁用了cookie，服务端支持把sessionid放在请求地址中），会更容易被非法分子进行会话固定攻击。
+
+如何防御会话固定攻击？
+这个问题的根源在于sessionid不变，那么解决的方法就是改变sessionid，即未登录时拿到的是一个sessionid,登录后服务端给用户重新分配一个新的sessionid。
+
+Spring Security 中的防御主要体现在三个方面：
+
+「首先」就是上篇文章讲的 StrictHttpFirewall，请求地址中有 ; 请求会被直接拒绝，可以防止URL重写。
+
+「另一方面」就是响应的 Set-Cookie 字段中有 HttpOnly 属性，这种方式避免了通过 XSS 攻击来获取 Cookie 中的会话信息进而达成会话固定攻击。
+
+「第三点」则是让 sessionid 变一下。既然问题是由于 sessionid 不变导致的，那我就让 sessionid 变一下。
+具体在config中进行配置：
+.sessionManagement()
+.sessionFixation().【migrateSession()或者none()或者changeSessionId()或者newSession()】
+1）migrateSession 表示在登录成功之后，创建一个新的会话，然后讲旧的 session 中的信息复制到新的 session 中，「默认即此」。
+2）none 表示不做任何事情，继续使用旧的 session。
+3）changeSessionId 表示 session 不变，但是会修改 sessionid，这实际上用到了 Servlet 容器提供的防御会话固定攻击。
+4）newSession 表示登录后创建一个新的 session。
+默认的 migrateSession ，在用户匿名访问的时候是一个 sessionid，当用户成功登录之后，又是另外一个 sessionid，这样就可以有效避免会话固定攻击。
