@@ -20,6 +20,36 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import java.io.PrintWriter;
 import java.util.Arrays;
 
+
+/*
+ * 使用Spring Security登录成功后，有两种方式可以获取用户信息：
+ * 1、SecurityContextHolder.getContext().getAuthentication()
+ * 2、在 Controller 的方法中，加入 Authentication 参数
+ * 这两种方式本质上都是从SecurityContextHolder中获取，存放用户信息到SecurityContextHolder的逻辑在SecurityContextPersistenceFilter过滤器中，
+ * SecurityContextPersistenceFilter过滤器是在UsernamePasswordAuthenticationFilter过滤器之前就进行了拦截的，
+ * 该过滤器的逻辑是：首先会从session中获取SecurityContext，然后将SecurityContext设置到SecurityContextHolder中，方便后面使用，
+ * 当请求结束后，会清空SecurityContextHolder，再把SecurityContext返回session中，下次请求过来的时候，也是先从session获取值...以此反复
+ * 所以对于要获取用户信息的请求接口，必须要走过滤器链，即配置http.authorizeRequests().antMatchers("/hello").permitAll().anyRequest().authenticated()方式，
+ * 否则将无法从SecurityContextHolder中获取用户信息。
+ *
+ * 资源放行的两种方式：
+ * 1、 主要用来放行静态资源的请求，这种方式请求不会经过过滤器链
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/js/**","/css/**","/images/**");
+    }
+ *
+ * 2、主要用来放行接口请求，这种方式的请求会经过过滤器链，即在相应的接口中可以从SecurityContext获取到用户信息
+ * protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers("/vc.jpg")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                ...
+        }
+ *
+ **/
+
 /**
  * @ClassName SecurityConfig
  * @Description TODO
